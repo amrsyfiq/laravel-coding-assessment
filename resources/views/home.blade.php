@@ -1,3 +1,5 @@
+<!-- Author : Muhammad Amir Syafiq -->
+
 @extends('layouts.app')
 
 @section('content')
