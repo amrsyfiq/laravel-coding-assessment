@@ -7,7 +7,7 @@ use App\Models\User;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
-class AdminSeeder extends Seeder
+class CustomerSupportSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -17,12 +17,12 @@ class AdminSeeder extends Seeder
     public function run()
     {
         $user = User::create([
-            'name' => 'Admin',
-            'email' => 'Admin@email.com',
-            'phone' => '+6011-11111111',
+            'name' => 'Customer Support',
+            'email' => 'CustomerSupport@email.com',
+            'phone' => '+6011-11111112',
             'password' => bcrypt('87654321')
         ]);
 
-        $user->assignRole('Admin');
+        $user->assignRole('CustomerSupport');
     }
 }
