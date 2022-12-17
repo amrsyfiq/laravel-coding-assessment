@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Validator;
+use Yajra\DataTables\DataTables;
 
 class ProductController extends Controller
 {
@@ -28,10 +29,27 @@ class ProductController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::latest()->paginate(5);
-        return view('products.index', compact('products'))->with('i', (request()->input('page', 1) - 1) * 5);
+
+        if ($request->ajax()) {
+
+            $data = Product::latest()->get();
+
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->addColumn('action', function ($row) {
+                    $btn = ' <a href="/products/' . $row->id . '" class="edit btn btn-info"><i class="fa fa-user-circle" aria-hidden="true"></i></a>';
+                    $btn = $btn . ' <a href="/products/' . $row->id . '/edit" class="edit btn btn-warning"><i class="fa fa-edit" aria-hidden="true"></i></a>';
+
+                    $btn = $btn . ' <a href="javascript:void(0)" data-toggle="tooltip"  data-id="' . $row->id . '" data-original-title="Delete" class="btn btn-danger deleteProduct"><i class="fa fa-trash" style="color: #000;"aria-hidden="true"></i></a>';
+                    return $btn;
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+
+        return view('products.index');
     }
 
     /**
@@ -53,20 +71,40 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-
-        $request->validate([
-            'name' => 'required',
-            'price' => 'required',
-            'description' => 'required',
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|max:25',
+            'price' => 'required|max:10',
+            'description' => 'required|max:100',
             'tags' => 'required',
             'status' => 'required',
         ]);
 
-        $input = $request->all();
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => $validator->errors()->all()
+            ]);
+        }
 
-        Product::create($input);
+        $tags = $request->tags;
+        $tags = implode(', ', $tags);
 
-        return redirect()->route('products.index')->with('success', 'Product created successfully.');
+        //Assign the "mutated" tags value to $input
+        $input['tags'] = $tags;
+
+        Product::updateOrCreate(
+            [
+                'id' => $request->product_id
+            ],
+            [
+                'name' => $request->name,
+                'price' => $request->price,
+                'description' => $request->description,
+                'tags' => $input['tags'],
+                'status' => $request->status,
+            ]
+        );
+
+        return response()->json(['success' => 'Product saved successfully.']);
     }
 
     /**
@@ -80,6 +118,7 @@ class ProductController extends Controller
     {
         return view('products.show', compact('product'));
     }
+
     /**
      * Show the form for editing the specified resource.
      *
@@ -93,40 +132,15 @@ class ProductController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Product  $product
-     * @return \Illuminate\Http\Response
-     */
-
-    public function update(Request $request, Product $product)
-    {
-        $request->validate([
-            'name' => 'required',
-            'price' => 'required',
-            'description' => 'required',
-            'tags' => 'required',
-            'status' => 'required',
-        ]);
-
-        $input = $request->all();
-
-        $product->update($input);
-
-
-        return redirect()->route('products.index')->with('success', 'Product updated successfully');
-    }
-
-    /**
      * Remove the specified resource from storage.
      *
      * @param  \App\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Product $product)
+    public function destroy($id)
     {
-        $product->delete();
-        return redirect()->route('products.index')->with('success', 'Product deleted successfully');
+        Product::find($id)->delete();
+
+        return response()->json(['success' => 'Product deleted successfully.']);
     }
 }
