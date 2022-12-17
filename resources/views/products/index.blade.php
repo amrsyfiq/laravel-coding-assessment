@@ -36,12 +36,12 @@
                         <thead>
                             <tr>
                                 <th class="text-center">#</th>
-                                <th class="text-center">Name</th>
-                                <th class="text-center">Price</th>
-                                <th class="text-center">Description</th>
-                                <th class="text-center">Tags</th>
-                                <th class="text-center">Status</th>
-                                <th class="text-center">Action</th>
+                                <th class="text-center">{{ __('Name') }}</th>
+                                <th class="text-center">{{ __('Price') }}</th>
+                                <th class="text-center">{{ __('Description') }}</th>
+                                <th class="text-center">{{ __('Tags') }}</th>
+                                <th class="text-center">{{ __('Status') }}</th>
+                                <th class="text-center">{{ __('Action') }}</th>
                             </tr>
                         </thead>
                         <tbody>

@@ -23,7 +23,7 @@
     </div>
     <div class="row justify-content-center">
         <div class="col-md-3">
-            <div class="card" style="background-color: #E97777">
+            <div class="card" style="background-color: #BBDED6">
                 <div class="card-header">{{ __('Users') }}</div>
 
                 <div class="card-body">
@@ -33,12 +33,12 @@
                         </div>
                     @endif
 
-                    {{ __('You are logged in!') }}
+                    {{ __('Manage Users') }}
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card" style="background-color: #BAD7E9">
+            <div class="card" style="background-color: #B9D7EA">
                 <div class="card-header">{{ __('Roles') }}</div>
 
                 <div class="card-body">
@@ -48,12 +48,12 @@
                         </div>
                     @endif
 
-                    {{ __('You are logged in!') }}
+                    {{ __('Manage Roles') }}
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card" style="background-color: #FCFFE7">
+            <div class="card" style="background-color: #FF9292">
                 <div class="card-header">{{ __('Products') }}</div>
 
                 <div class="card-body">
@@ -63,7 +63,7 @@
                         </div>
                     @endif
 
-                    {{ __('You are logged in!') }}
+                    {{ __('Manage Products') }}
                 </div>
             </div>
         </div>

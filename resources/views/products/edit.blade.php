@@ -37,7 +37,7 @@
                     <input type="hidden" name="product_id" id="product_id" value={{ $product->id }}>
 
                     <div class="mb-3">
-                        <label for="name" class="form-label">Name</label>
+                        <label for="name" class="form-label">{{ __('Name') }}</label>
                         <input type="text" class="form-control mb-2" id="name" name="name" value="{{ $product->name }}">
                         @error('name')
                             <span class="text-danger">{{ $message }}</span>
@@ -45,7 +45,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="price" class="form-label">Price</label>
+                        <label for="price" class="form-label">{{ __('Price') }}</label>
                         <input type="number" class="form-control mb-2" id="price" name="price" value="{{ $product->price }}">
                         @error('price')
                             <span class="text-danger">{{ $message }}</span>
@@ -53,7 +53,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="description" class="form-label">Description</label>
+                        <label for="description" class="form-label">{{ __('Description') }}</label>
                         <textarea class="form-control mb-2" id="description" name="description">{{ $product->description }}</textarea>
                         @error('description')
                             <span class="text-danger">{{ $message }}</span>
@@ -61,7 +61,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="tags" class="form-label">Tags</label>
+                        <label for="tags" class="form-label">{{ __('Tags') }}</label>
                         {{ Form::select('tags[]', array("New"=>"New", "Top Seller"=>"Top Seller", "On Sales"=>"On Sales", "Discount"=>"Discount",), explode(', ', $product->tags), array('class' => 'form-select', 'id'=> 'tags', 'multiple')) }}
                         @error('tags')
                             <span class="text-danger">{{ $message }}</span>
@@ -69,13 +69,13 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="status" class="form-label">Status</label>
+                        <label for="status" class="form-label">{{ __('Status') }}</label>
                         <select class="form-select mb-2" id="status" name="status">
                             <option value="{{ $product->status }}" selected hidden>{{ $product->status }}</option>
-                            <option value="In Stock">In Stock</option>
-                            <option value="Out of Stock">Out of Stock</option>
-                            <option value="Shipping">Shipping</option>
-                            <option value="Delivered">Delivered</option>
+                            <option value="In Stock">{{ __('In Stock') }}</option>
+                            <option value="Out of Stock">{{ __('Out of Stock') }}</option>
+                            <option value="Shipping">{{ __('Shipping') }}</option>
+                            <option value="Delivered">{{ __('Delivered') }}</option>
                         </select>
                         @error('status')
                             <span class="text-danger">{{ $message }}</span>
@@ -83,8 +83,8 @@
                     </div>
 
                     <br>
-                    <button type="submit" id="updateButton" class="btn btn-primary"><i class="fa fa-check" aria-hidden="true"></i> Submit</button>
-                    <a href="{{ route('products.index') }}" class="btn btn-default"> Back</a>
+                    <button type="submit" id="updateButton" class="btn btn-primary"><i class="fa fa-check" aria-hidden="true"></i> {{ __('Submit') }}</button>
+                    <a href="{{ route('products.index') }}" class="btn btn-default"> {{ __('Back') }}</a>
                 </form>
             </div>
         </div>

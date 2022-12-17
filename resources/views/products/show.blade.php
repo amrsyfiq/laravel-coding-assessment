@@ -30,33 +30,33 @@
 
             <div class="card card-body bg-light p-4">
                 <div class="mb-3">
-                    <label for="name" class="form-label">Name</label>
+                    <label for="name" class="form-label">{{ __('Name') }}</label>
                     <input type="text" class="form-control mb-2" id="name" name="name" value="{{ $product->name }}" disabled>
                 </div>
 
                 <div class="mb-3">
-                    <label for="price" class="form-label">Price</label>
+                    <label for="price" class="form-label">{{ __('Price') }}</label>
                     <input type="number" class="form-control mb-2" id="price" name="price" value="{{ $product->price }}">
                 </div>
 
                 <div class="mb-3">
-                    <label for="description" class="form-label">Description</label>
+                    <label for="description" class="form-label">{{ __('Description') }}</label>
                     <textarea class="form-control mb-2" id="description" name="description">{{ $product->description }}</textarea>
                 </div>
 
                 <div class="mb-3">
-                    <label for="tags" class="form-label">Tags</label>
+                    <label for="tags" class="form-label">{{ __('Tags') }}</label>
                     <input type="text" class="form-control mb-2" id="tags" name="tags" value="{{ $product->tags }}">
                 </div>
 
                 <div class="mb-3">
-                    <label for="status" class="form-label">Status</label>
+                    <label for="status" class="form-label">{{ __('Status') }}</label>
                     <input type="text" class="form-control mb-2" id="status" name="status" value="{{ $product->status }}">
                 </div>
 
                 <br>
                 <div class="col-3">
-                    <a href="{{ route('products.index') }}" class="btn btn-default float-left">Back</a>
+                    <a href="{{ route('products.index') }}" class="btn btn-default float-left">{{ __('Back') }}</a>
                 </div>
             </div>
         </div>
