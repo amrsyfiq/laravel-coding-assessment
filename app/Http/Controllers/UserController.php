@@ -103,9 +103,9 @@ class UserController extends Controller
     public function edit($id)
     {
         $user = User::find($id);
+        $this->authorize('update', $user);
         $roles = Role::pluck('name', 'name')->all();
         $userRole = $user->roles->pluck('name', 'name')->first();
-
         return view('users.edit', compact('user', 'roles', 'userRole'));
     }
 
@@ -154,7 +154,8 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        User::find($id)->delete();
+        $user = User::find($id)->delete();
+        $this->authorize('destroy', $user);
         return redirect()->route('users.index')->with('success', 'User deleted successfully');
     }
 }
