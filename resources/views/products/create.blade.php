@@ -69,7 +69,7 @@
                     <div class="mb-3">
                         <label for="status" class="form-label">{{ __('Status') }}</label>
                         <select class="form-select mb-2" id="status" name="status">
-                            <option value="" selected disabled hidden>{{ __('Select Status') }}</option>
+                            <option value="" selected disabled hidden >{{ __('Select a status') }}</option>
                             <option value="In Stock">{{ __('In Stock') }}</option>
                             <option value="Out of Stock">{{ __('Out of Stock') }}</option>
                             <option value="Shipping">{{ __('Shipping') }}</option>
@@ -97,7 +97,10 @@
          --------------------------------------------
          --------------------------------------------*/ 
         $(document).ready(function() {
-            $('#tags').select2({theme: "bootstrap-5"});
+            $('#tags').select2({
+                theme: "bootstrap-5",
+                placeholder: "Select tags",
+            });
         });
 
         /*------------------------------------------

@@ -16,7 +16,7 @@
                         </div>
                     @endif
 
-                    {{ __('You are logged in!') }}
+                    {{ __('Manage products here!') }}
                 </div>
             </div>
 
@@ -121,7 +121,7 @@
                 });
                 Swal.fire(
                 'Deleted!',
-                'Your file has been deleted.',
+                'Product has been deleted.',
                 'success'
                 )
             }

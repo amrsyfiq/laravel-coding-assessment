@@ -17,7 +17,7 @@ class CheckRole
      */
     public function handle($request, Closure $next)
     {
-        if (Auth::user()->hasrole('Customer')) {
+        if (Auth::user()->hasRole('Customer')) {
             Auth::logout();
 
             $request->session()->invalidate();

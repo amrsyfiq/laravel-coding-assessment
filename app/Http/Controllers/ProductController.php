@@ -39,8 +39,8 @@ class ProductController extends Controller
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
-                    $btn = ' <a href="/products/' . $row->id . '" class="edit btn btn-info"><i class="fa fa-user-circle" aria-hidden="true"></i></a>';
-                    $btn = $btn . ' <a href="/products/' . $row->id . '/edit" class="edit btn btn-warning"><i class="fa fa-edit" aria-hidden="true"></i></a>';
+                    $btn = ' <a href="/products/' . $row->id . '" class="btn btn-info"><i class="fa fa-user-circle" aria-hidden="true"></i></a>';
+                    $btn = $btn . ' <a href="/products/' . $row->id . '/edit" class="btn btn-warning"><i class="fa fa-edit" aria-hidden="true"></i></a>';
 
                     $btn = $btn . ' <a href="javascript:void(0)" data-toggle="tooltip"  data-id="' . $row->id . '" data-original-title="Delete" class="btn btn-danger deleteProduct"><i class="fa fa-trash" style="color: #000;"aria-hidden="true"></i></a>';
                     return $btn;
