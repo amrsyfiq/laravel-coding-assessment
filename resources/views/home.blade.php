@@ -23,7 +23,7 @@
     </div>
     <div class="row justify-content-center">
         <div class="col-md-3">
-            <div class="card" style="background-color: #BBDED6">
+            <a href="{{ route('users.index') }}" class="card bg-info" style="color: black; text-decoration: none;">
                 <div class="card-header">{{ __('Users') }}</div>
 
                 <div class="card-body">
@@ -35,10 +35,10 @@
 
                     {{ __('Manage Users') }}
                 </div>
-            </div>
+            </a>
         </div>
         <div class="col-md-3">
-            <div class="card" style="background-color: #B9D7EA">
+            <a href="{{ route('roles.index') }}" class="card bg-warning" style="color: black; text-decoration: none;">
                 <div class="card-header">{{ __('Roles') }}</div>
 
                 <div class="card-body">
@@ -50,10 +50,10 @@
 
                     {{ __('Manage Roles') }}
                 </div>
-            </div>
+            </a>
         </div>
         <div class="col-md-3">
-            <div class="card" style="background-color: #FF9292">
+            <a href="{{ route('products.index') }}" class="card bg-danger" style="color: black; text-decoration: none;">
                 <div class="card-header">{{ __('Products') }}</div>
 
                 <div class="card-body">
@@ -65,7 +65,7 @@
 
                     {{ __('Manage Products') }}
                 </div>
-            </div>
+            </a>
         </div>
     </div>
     </div>

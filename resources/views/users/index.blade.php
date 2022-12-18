@@ -41,14 +41,16 @@
                         <div class="card-body">
                             <div class="card-text">
                                 <div class="float-start">
-                                    Role : {{ $user->roles->pluck('name')[0] ?? '' }}
+                                    {{ __('Role') }} : {{ $user->roles->pluck('name')[0] ?? '' }}
                                 <br>
-                                    Email : {{ __($user->email) }}
+                                    {{ __('Email') }} : {{ __($user->email) }}
                                 <br>
-                                    Phone Number : {{ __($user->phone) }}
+                                    {{ __('Phone Number') }} : {{ __($user->phone) }}
                                 <br>
+                                @if ($user->created_at > now()->subMinutes(5))
                                 <span class="badge rounded-pill bg-success text-white mt-3">{{ __('New') }}</span>
-                                <small>Last Updated - {{ __( $user->updated_at->diffForHumans() ) }}</small>
+                                @endif
+                                <small>{{ __('Last Updated') }} - {{ __( $user->updated_at->diffForHumans() ) }}</small>
                                 </div>
                                 <div class="float-end">
                                 <a href="{{ route('users.show', $user->id) }}" class="btn btn-info"><i class="fa fa-user-circle" aria-hidden="true"></i></a>
