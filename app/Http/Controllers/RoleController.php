@@ -6,7 +6,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Yajra\DataTables\DataTables;
 
 class RoleController extends Controller
 {
@@ -29,8 +30,24 @@ class RoleController extends Controller
      */
     public function index(Request $request)
     {
-        $roles = Role::orderBy('id', 'DESC')->paginate(5);
-        return view('roles.index', compact('roles'))->with('i', ($request->input('page', 1) - 1) * 5);
+        if ($request->ajax()) {
+
+            $data = Role::latest()->get();
+
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->addColumn('action', function ($row) {
+                    $btn = ' <a href="/roles/' . $row->id . '" class="btn btn-info"><i class="fa fa-user-circle" aria-hidden="true"></i></a>';
+                    $btn = $btn . ' <a href="/roles/' . $row->id . '/edit" class="btn btn-warning"><i class="fa fa-edit" aria-hidden="true"></i></a>';
+
+                    $btn = $btn . ' <a href="javascript:void(0)" data-toggle="tooltip"  data-id="' . $row->id . '" data-original-title="Delete" class="btn btn-danger deleteRole"><i class="fa fa-trash" style="color: #000;"aria-hidden="true"></i></a>';
+                    return $btn;
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+
+        return view('roles.index');
     }
 
     /**
@@ -40,8 +57,8 @@ class RoleController extends Controller
      */
     public function create()
     {
-        $permission = Permission::get();
-        return view('roles.create', compact('permission'));
+        $permissions = Permission::get();
+        return view('roles.create', compact('permissions'));
     }
 
     /**
@@ -52,16 +69,29 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'name' => 'required|unique:roles,name',
-            'permission' => 'required',
+            'permissions' => 'required',
         ]);
 
-        $role = Role::create(['name' => $request->input('name')]);
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => $validator->errors()->all()
+            ]);
+        }
 
-        $role->syncPermissions($request->input('permission'));
 
-        return redirect()->route('roles.index')->with('success', 'Role created successfully');
+        $permissions = $request->permissions;
+        $permissions = implode(', ', $permissions);
+
+        //Assign the "mutated" permissions value to $input
+        $input['permissions'] = $permissions;
+        $input = $request->all();
+
+        $role = Role::create($input);
+        $role->syncPermissions($request->permissions);
+
+        return response()->json(['success' => 'Role saved successfully.']);
     }
 
     /**
@@ -73,8 +103,7 @@ class RoleController extends Controller
     public function show($id)
     {
         $role = Role::find($id);
-        $rolePermissions = Permission::join("role_has_permissions", "role_has_permissions.permission_id", "=", "permissions.id")
-            ->where("role_has_permissions.role_id", $id)->get();
+        $rolePermissions = $role->permissions()->get();
 
         return view('roles.show', compact('role', 'rolePermissions'));
     }
@@ -88,12 +117,38 @@ class RoleController extends Controller
     public function edit($id)
     {
         $role = Role::find($id);
-        $permission = Permission::get();
-        $rolePermissions = DB::table("role_has_permissions")->where("role_has_permissions.role_id", $id)
-            ->pluck('role_has_permissions.permission_id', 'role_has_permissions.permission_id')
-            ->all();
+        $selectedRolePermissions = $role->permissions()->get()->toArray();
 
-        return view('roles.edit', compact('role', 'permission', 'rolePermissions'));
+        $selectedArray = [[
+            'selected' => '',
+            'name' => '',
+        ]];
+
+        $rolePermissionId = [];
+        foreach ($selectedRolePermissions as $key => $rolePermission) {
+            $selectedArray[$key]['selected'] = 1;
+            $selectedArray[$key]['name'] = $rolePermission['name'];
+            array_push($rolePermissionId, $rolePermission['id']);
+        }
+
+        $unselectedRolePermissions = Permission::whereNotIn('id', $rolePermissionId)->get();
+
+        $unselectedArray = [[
+            'selected' => '',
+            'name' => '',
+        ]];
+
+        foreach ($unselectedRolePermissions as $key => $rolePermission) {
+            $unselectedArray[$key]['selected'] = 0;
+            $unselectedArray[$key]['name'] = $rolePermission->name;
+        }
+
+        //joined array
+        $joinRolePermisison = [[]];
+
+        $joinRolePermisison = (array_merge($selectedArray, $unselectedArray));
+
+        return view('roles.edit', compact('role', 'joinRolePermisison'));
     }
 
     /**
@@ -105,17 +160,30 @@ class RoleController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->validate($request, [
-            'name' => 'required',
-            'permission' => 'required',
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|unique:roles,name,' . $id,
+            'permissions' => 'required',
         ]);
 
-        $role = Role::find($id);
-        $role->name = $request->input('name');
-        $role->save();
-        $role->syncPermissions($request->input('permission'));
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => $validator->errors()->all()
+            ]);
+        }
 
-        return redirect()->route('roles.index')->with('success', 'Role updated successfully');
+
+        $permissions = $request->permissions;
+        $permissions = implode(', ', $permissions);
+
+        //Assign the "mutated" permissions value to $input
+        $input['permissions'] = $permissions;
+        $input = $request->all();
+
+        $role = Role::find($id);
+        $role->update($input);
+        $role->syncPermissions($request->permissions);
+
+        return response()->json(['success' => 'Role updated successfully.']);
     }
 
     /**
@@ -126,7 +194,8 @@ class RoleController extends Controller
      */
     public function destroy($id)
     {
-        DB::table("roles")->where('id', $id)->delete();
-        return redirect()->route('roles.index')->with('success', 'Role deleted successfully');
+        Role::find($id)->delete();
+
+        return response()->json(['success' => 'Role deleted successfully.']);
     }
 }
