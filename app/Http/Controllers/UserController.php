@@ -7,8 +7,10 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -29,8 +31,12 @@ class UserController extends Controller
 
     public function index(Request $request)
     {
-        $users = User::role(['Customer', 'CustomerSupport'])->orderBy('id', 'DESC')->paginate(5);
-        return view('users.index', compact('users'))->with('i', ($request->input('page', 1) - 1) * 5);
+        if (Auth::user()->hasRole('CustomerSupport')) {
+            $users = User::role(['Customer'])->orderBy('id', 'DESC')->paginate(3);
+        } else {
+            $users = User::role(['Customer', 'CustomerSupport'])->orderBy('id', 'DESC')->paginate(3);
+        }
+        return view('users.index', compact('users'));
     }
 
     /**
@@ -53,13 +59,19 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'name' => 'required',
             'email' => 'required|email|unique:users,email',
             'phone' => 'required',
             'roles' => 'required',
-            'password' => 'required|same:confirm-password',
+            'password' => 'required|min:8|same:confirm-password',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => $validator->errors()->all()
+            ]);
+        }
 
         $input = $request->all();
         $input['password'] = Hash::make($input['password']);
@@ -67,7 +79,7 @@ class UserController extends Controller
         $user = User::create($input);
         $user->assignRole($request->input('roles'));
 
-        return redirect()->route('users.index')->with('success', 'User created successfully');
+        return response()->json(['success' => 'User created successfully.']);
     }
 
     /**
@@ -93,7 +105,7 @@ class UserController extends Controller
     {
         $user = User::find($id);
         $roles = Role::pluck('name', 'name')->all();
-        $userRole = $user->roles->pluck('name', 'name')->all();
+        $userRole = $user->roles->pluck('name', 'name')->first();
 
         return view('users.edit', compact('user', 'roles', 'userRole'));
     }
@@ -107,27 +119,32 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'name' => 'required',
             'email' => 'required|email|unique:users,email,' . $id,
             'phone' => 'required',
             'roles' => 'required',
         ]);
 
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => $validator->errors()->all()
+            ]);
+        }
 
         $input = $request->all();
-        if (!empty($input['password'])) {
-            $input['password'] = Hash::make($input['password']);
-        } else {
-            $input = Arr::except($input, array('password'));
-        }
+        // if (!empty($input['password'])) {
+        //     $input['password'] = Hash::make($input['password']);
+        // } else {
+        //     $input = Arr::except($input, array('password'));
+        // }
 
         $user = User::find($id);
         $user->update($input);
         DB::table('model_has_roles')->where('model_id', $id)->delete();
         $user->assignRole($request->input('roles'));
 
-        return redirect()->route('users.index')->with('success', 'User updated successfully');
+        return response()->json(['success' => 'User updated successfully.']);
     }
 
     /**

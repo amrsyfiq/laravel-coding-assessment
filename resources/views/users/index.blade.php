@@ -16,7 +16,7 @@
                         </div>
                     @endif
 
-                    {{ __('You are logged in!') }}
+                    {{ __('Manage users here!') }}
                 </div>
             </div>
 
@@ -30,41 +30,44 @@
             </div>
             <div class="clearfix"></div>
 
-            @foreach ($users as $user)
-                <div class="card mb-3">
-                    <h5 class="card-header">
-                        {{ __($user->name) }}
-                        <span class="badge rounded-pill bg-light text-dark">Created - {{ __( $user->created_at->diffForHumans() ) }}</span>
-                    </h5>
+            <div id="reload">
+                @foreach ($users as $user)
+                    <div class="card mb-3">
+                        <h5 class="card-header">
+                            {{ __($user->name) }}
+                            <span class="badge rounded-pill bg-light text-dark">{{ __('Created') }} - {{ __( $user->created_at->diffForHumans() ) }}</span>
+                        </h5>
 
-                    <div class="card-body">
-                        <div class="card-text">
-                            <div class="float-start">
-                                Role: {{ $user->roles->pluck('name')[0] ?? '' }}
-                              <br>
-                                Phone Number: {{ __($user->phone) }}
-                              <br>
-                              <span class="badge rounded-pill bg-success text-white">New</span>
-                              <small>Last Updated - {{ __( $user->updated_at->diffForHumans() ) }}</small>
+                        <div class="card-body">
+                            <div class="card-text">
+                                <div class="float-start">
+                                    Role : {{ $user->roles->pluck('name')[0] ?? '' }}
+                                <br>
+                                    Email : {{ __($user->email) }}
+                                <br>
+                                    Phone Number : {{ __($user->phone) }}
+                                <br>
+                                <span class="badge rounded-pill bg-success text-white mt-3">{{ __('New') }}</span>
+                                <small>Last Updated - {{ __( $user->updated_at->diffForHumans() ) }}</small>
+                                </div>
+                                <div class="float-end">
+                                <a href="{{ route('users.show', $user->id) }}" class="btn btn-info"><i class="fa fa-user-circle" aria-hidden="true"></i></a>
+                                @can('user-edit')
+                                    <a href="{{ route('users.edit', $user->id) }}" class="btn btn-warning"><i class="fa fa-edit" aria-hidden="true"></i></a>
+                                @endcan
+                                @can('user-delete')
+                                    <button type="submit" class="btn btn-danger" onclick="deleteUser('{{ $user->id }}')"><i class="fa fa-trash" style="color: #000;"aria-hidden="true"></i></button>
+                                @endcan
+                                </div>
+                                <div class="clearfix"></div>
                             </div>
-                            <div class="float-end">
-                              <a href="{{ route('users.show', $user->id) }}" class="btn btn-info"><i class="fa fa-user-circle" aria-hidden="true"></i></a>
-                              @can('user-edit')
-                                <a href="{{ route('users.edit', $user->id) }}" class="btn btn-warning"><i class="fa fa-edit" aria-hidden="true"></i></a>
-                              @endcan
-                              @can('user-delete')
-                                <form action="{{ route('users.destroy', $user->id) }}" style="display: inline" method="POST">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?')"><i class="fa fa-trash" style="color: #000;"aria-hidden="true"></i></button>
-                                </form>
-                              @endcan
-                            </div>
-                            <div class="clearfix"></div>
                         </div>
                     </div>
-                </div>
-            @endforeach
+                @endforeach
+            </div>
+            <div class="float-end pt-3">
+                {{  $users->links()  }}
+            </div>
 
             @if (count($users) === 0)
                 <div class="alert alert-danger p-2">
@@ -75,4 +78,67 @@
         </div>
     </div>
 </div>
+<script>
+
+    /*------------------------------------------
+    --------------------------------------------
+    Render pageRefresh
+    --------------------------------------------
+    --------------------------------------------*/
+
+    $(document).ready(function() {
+    var pageRefresh = 1000; //5 s
+        setInterval(function() {
+            $('#reload').load(location.href + " #reload");
+        }, pageRefresh);
+    });
+    
+    function deleteUser(user_id) {
+        
+        /*------------------------------------------
+        --------------------------------------------
+        Pass Header Token
+        --------------------------------------------
+        --------------------------------------------*/ 
+        $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+        });
+            
+        /*------------------------------------------
+        --------------------------------------------
+        Delete User Code
+        --------------------------------------------
+        --------------------------------------------*/
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: "DELETE",
+                    url: "{{ route('users.store') }}"+'/'+user_id,
+                    success: function (data) {
+                        table.draw();
+                    },
+                    error: function (data) {
+                        console.log('Error:', data);
+                    }
+                });
+                Swal.fire(
+                'Deleted!',
+                'User has been deleted.',
+                'success'
+                )
+            }
+        });
+    }   
+</script>
 @endsection
