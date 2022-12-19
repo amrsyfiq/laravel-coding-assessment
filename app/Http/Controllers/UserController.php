@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Illuminate\Support\Arr;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -110,6 +111,34 @@ class UserController extends Controller
     }
 
     /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function profile($id)
+    {
+        $user = User::find($id);
+        $this->authorize('profile', $user);
+        $roles = Role::pluck('name', 'name')->all();
+        $userRole = $user->roles->pluck('name', 'name')->first();
+        return view('users.profile', compact('user', 'roles', 'userRole'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function password($id)
+    {
+        $user = User::find($id);
+        $this->authorize('password', $user);
+        return view('users.password', compact('user'));
+    }
+
+    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -132,16 +161,45 @@ class UserController extends Controller
         }
 
         $input = $request->all();
-        // if (!empty($input['password'])) {
-        //     $input['password'] = Hash::make($input['password']);
-        // } else {
-        //     $input = Arr::except($input, array('password'));
-        // }
 
         $user = User::find($id);
         $user->update($input);
         DB::table('model_has_roles')->where('model_id', $id)->delete();
         $user->assignRole($request->input('roles'));
+
+        return response()->json(['success' => 'User updated successfully.']);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function updatePassword(Request $request, $id)
+    {
+        $user = Auth::user();
+        $validator = Validator::make($request->all(), [
+            'new-password' => 'required|min:8|same:confirm-password',
+            'current-password' => ['required', function ($value, $fail) use ($user) {
+                if (!\Hash::check($value, $user->password)) {
+                    return $fail(__('The current password is incorrect.'));
+                }
+            }],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => $validator->errors()->all()
+            ]);
+        }
+
+        $input = $request->all();
+        $input['confirm-password'] = Hash::make($input['confirm-password']);
+
+        $user = User::find($id);
+        $user->update(['password' => $input['confirm-password']]);
 
         return response()->json(['success' => 'User updated successfully.']);
     }

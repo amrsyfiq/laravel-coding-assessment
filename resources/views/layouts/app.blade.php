@@ -9,7 +9,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Laravel Coding Assessment</title>
+    <title>{{ __('Laravel Coding Assessment') }}</title>
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -82,6 +82,14 @@
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" href="{{ route('users.profile', Auth::user()->id) }}">
+                                        {{ __('Edit Profile') }}
+                                    </a>
+
+                                    <a class="dropdown-item" href="{{ route('users.password', Auth::user()->id) }}">
+                                        {{ __('Change Password') }}
+                                    </a>
+
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
