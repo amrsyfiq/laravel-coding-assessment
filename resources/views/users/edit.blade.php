@@ -74,7 +74,7 @@
 
                     <br>
                     <button type="submit" id="updateButton" class="btn btn-primary"><i class="fa fa-check" aria-hidden="true"></i> {{ __('Submit') }}</button>
-                    <a href="{{ route('users.index') }}" class="btn btn-defau__lt"> {{ __('Back') }}</a>
+                    <a href="{{ route('users.index') }}" class="btn btn-default"> {{ __('Back') }}</a>
                 </form>
             </div>
         </div>

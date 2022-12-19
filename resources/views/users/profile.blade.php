@@ -24,7 +24,7 @@
                 <h4 class="pb-3">{{ __('Update profile - ') }}{{ $user->name }}</h4>
             </div>
             <div class="float-end">
-                <a href="{{ route('users.index') }}" class="btn btn-info float-right"><i class="fa fa-arrow-left" aria-hidden="true"></i> {{ __('All user') }}</a> 
+                <a href="{{ url('/home') }}" class="btn btn-info float-right"><i class="fa fa-arrow-left" aria-hidden="true"></i> {{ __('Home') }}</a> 
             </div>
             <div class="clearfix"></div>
 
@@ -74,7 +74,7 @@
 
                     <br>
                     <button type="submit" id="updateButton" class="btn btn-primary"><i class="fa fa-check" aria-hidden="true"></i> {{ __('Submit') }}</button>
-                    <a href="{{ route('users.index') }}" class="btn btn-defau__lt"> {{ __('Back') }}</a>
+                    <a href="{{ url('/home') }}" class="btn btn-default"> {{ __('Back') }}</a>
                 </form>
             </div>
         </div>
