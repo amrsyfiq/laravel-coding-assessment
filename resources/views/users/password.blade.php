@@ -16,12 +16,12 @@
                         </div>
                     @endif
 
-                    {{ __('Update user here!') }}
+                    {{ __('Update your password here!') }}
                 </div>
             </div>
 
             <div class="float-start">
-                <h4 class="pb-3">{{ __('Update users - ') }}{{ $user->name }}</h4>
+                <h4 class="pb-3">{{ __('Update password - ') }}{{ $user->name }}</h4>
             </div>
             <div class="float-end">
                 <a href="{{ route('users.index') }}" class="btn btn-info float-right"><i class="fa fa-arrow-left" aria-hidden="true"></i> {{ __('All user') }}</a> 

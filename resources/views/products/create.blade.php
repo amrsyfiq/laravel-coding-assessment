@@ -60,7 +60,7 @@
 
                     <div class="mb-3">
                         <label for="tags" class="form-label">{{ __('Tags') }}</label>
-                        {{ Form::select('tags[]', array("New"=>"New", "Top Seller"=>"Top Seller", "On Sales"=>"On Sales", "Discount"=>"Discount",), [], array('class' => 'form-select', 'id'=> 'tags', 'multiple')) }}
+                        {{ Form::select('tags[]', array("New"=>"New", "Top Seller"=>"Top Seller", "On Sales"=>"On Sales", "Discount"=>"Discount",), [], array('class' => 'form-select', 'id'=> 'tags','style'=> 'width:100%', 'multiple')) }}
                         @error('tags')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror

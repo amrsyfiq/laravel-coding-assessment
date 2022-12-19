@@ -37,7 +37,7 @@
                 <div class="mb-3">
                     <label for="permission" class="form-label">{{ __('Permissions') }}</label>
                     @if(!empty($rolePermissions))
-                        <select class="form-select mb-2" id="roles" name="roles" multiple disabled>
+                        <select class="form-select mb-2" id="roles" name="roles"  style="width:100%" multiple disabled>
                             @foreach($rolePermissions as $permission)
                                 <option value="{{ $permission->name }}" selected>{{ __($permission->name) }}</option>
                             @endforeach
